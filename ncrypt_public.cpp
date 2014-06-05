@@ -25,14 +25,36 @@
 
 namespace ncrypt
 {
-  void inspect_sed_vector(std::vector<unsigned long int> vex)
+  bool file_is_empty(std::ifstream& pFile)
   {
-    std::cout << "{ ";
+        return pFile.peek() == std::ifstream::traits_type::eof();
+  }
+
+  std::vector<std::string> split_string(std::string str, std::string del)
+  {
+    std::vector<std::string> vex;
+    size_t pos = 0;
+    std::string token;
+
+    while ((pos = str.find(del)) != std::string::npos) {
+        token = str.substr(0, pos);
+        vex.push_back(token);
+        str.erase(0, pos + del.length());
+    }
+    vex.push_back(str);
+    return vex;
+  }
+
+  std::string inspect_sed_vector(std::vector<unsigned long int> vex)
+  {
+    std::string buff = "";
     for(int i = 0; i < vex.size(); i++)
     {
-      std::cout << vex[i] << "; ";
+      buff += SSTR(vex[i]);
+      buff += " ";
     }
-    std::cout << " } ";
+    buff.erase(buff.end()-1, buff.end());
+    return buff;
   }
 
   // Cel mai mare divizor comun
@@ -192,9 +214,12 @@ namespace ncrypt
       unsigned long int _get_modulo(std::vector<unsigned long int>);
       unsigned long int _get_multiplier(unsigned long int);
       unsigned long int _get_inverse_modulo(unsigned long int, unsigned long int);
+      void _init();
 
     public:
       Key();
+      Key(std::istream&); // cheie neinitializata
+      Key(std::string); // numele fisierului
       PublicKeyTable get_table();
       std::vector<unsigned long int> get_public_sed();
       std::vector<unsigned long int> get_sed();
@@ -202,9 +227,45 @@ namespace ncrypt
       unsigned long int get_inverse_modulo();
       unsigned long int get_modulo();
       std::string serialize();
+
+      friend std::ostream &operator << (std::ostream&, Key);
+      friend std::istream &operator >> (std::istream&, Key&);
   };
 
   Key::Key()
+  {
+    this->_init();
+  }
+
+  Key::Key(std::istream& in)
+  {
+    in >> (*this);
+  }
+
+  Key::Key(std::string file_name)
+  {
+    std::ofstream o_file;
+    std::ifstream i_file;
+
+    i_file.open(file_name.c_str());
+
+    if(!file_is_empty(i_file) && i_file.good())
+    {
+      i_file >> (*this);
+    }
+    else
+    {
+      this->_init();
+      o_file.open(file_name.c_str());
+
+      o_file << (*this);
+      o_file.close();
+    }
+
+    i_file.close();
+  }
+
+  void Key::_init()
   {
     this->table = PublicKeyTable();
     this->sed = this->_get_sed();
@@ -309,10 +370,67 @@ namespace ncrypt
   {
     std::cout << "<[Key modulo: " << this->modulo << " inverse_modulo: " << this->inverse_modulo << std::endl;
       std::cout << "\t sed: ";
-      ncrypt:inspect_sed_vector(this->sed);
-      std::cout << std::endl;
+      std::cout << ncrypt::inspect_sed_vector(this->sed) << std::endl;
     std::cout << "]>" << std::endl;
   }
+
+  std::string Key::serialize()
+  {
+    std::string buff = "";
+
+    buff += SSTR(this->modulo);
+    buff += " ";
+
+    buff += SSTR(this->multiplier);
+    buff += " ";
+
+    buff += SSTR(this->inverse_modulo);
+    buff += '\n';
+
+    buff += ncrypt::inspect_sed_vector(this->sed);
+    buff += '\n';
+
+    buff += ncrypt::inspect_sed_vector(this->public_sed);
+    buff += '\n';
+
+    return buff;
+  }
+
+  std::istream& operator >> (std::istream& in, Key& key)
+  {
+    std::string buff = "";
+    std::vector<std::string> vex;
+
+    std::getline(in, buff);
+    vex = split_string(buff, " ");
+
+    key.modulo = std::atoi(vex[0].c_str());
+    key.multiplier = std::atoi(vex[1].c_str());
+    key.inverse_modulo = std::atoi(vex[2].c_str());
+
+    std::getline(in, buff);
+    vex = split_string(buff, " ");
+    for(int i = 0; i < vex.size(); i++)
+    {
+      key.sed.push_back(std::atoi(vex[i].c_str()));
+    }
+
+    std::getline(in, buff);
+    vex = split_string(buff, " ");
+    for(int i = 0; i < vex.size(); i++)
+    {
+      key.public_sed.push_back(std::atoi(vex[i].c_str()));
+    }
+
+    return in;
+  }
+
+  std::ostream& operator << (std::ostream& out, Key key)
+  {
+    out << key.serialize();
+    return out;
+  }
+
   // ----------------------------------
   class Encriptor
   {
@@ -386,6 +504,7 @@ namespace ncrypt
       buff += fragments[i];
       buff += " ";
     }
+    buff.erase(buff.end()-1, buff.end());
     return buff;
   }
 
@@ -418,16 +537,11 @@ namespace ncrypt
   std::vector<unsigned long int> Decriptor::msg_to_vector(std::string msg)
   {
     std::vector<unsigned long int> fragments;
-    std::string delimiter = " ";
+    std::vector<std::string> fragments_str = ncrypt::split_string(msg, " ");
 
-    size_t pos = 0;
-    std::string token;
+    for(int i = 0; i < fragments_str.size(); i++)
+      fragments.push_back(std::atoi(fragments_str[i].c_str()));
 
-    while ((pos = msg.find(delimiter)) != std::string::npos) {
-        token = msg.substr(0, pos);
-        fragments.push_back(atoi(token.c_str()));
-        msg.erase(0, pos + delimiter.length());
-    }
     return fragments;
   }
 
@@ -470,6 +584,7 @@ namespace ncrypt
   {
     std::vector<unsigned long int> fragments = this->msg_to_vector(this->msg);
     std::string buff = "";
+
     for(int i = 0; i < fragments.size(); i++)
     {
       buff += this->decrypt_fragment(fragments[i]);
@@ -486,19 +601,35 @@ namespace ncrypt
 int main()
 {
 
-  ncrypt::Encriptor encriptor("Lorem ipsum dolor sit amet, consectetur adipiscing elit.");
+  //ncrypt::Encriptor encriptor("Lorem ipsum dolor sit amet, consectetur adipiscing elit.");
 
   //std::cout << encriptor.to_s() << std::endl;
-  std::cout << encriptor.get_key().serialize();
+  //std::cout << encriptor.get_key().serialize() << std::endl;
 
-/*
-  ncrypt::Decriptor decriptor(encriptor.to_s(), encriptor.get_key());
-  std::cout << decriptor.to_s() << std::endl;
+  //ncrypt::Decriptor decriptor(encriptor.to_s(), encriptor.get_key());
+  //std::cout << decriptor.to_s() << std::endl;
 
-*/
   /*ncrypt::PublicKeyTable tbl;
   tbl.inspect();
+  std::ofstream out("my.key");
+  ncrypt::Key key;
+  out << key;
+
+  out.close();
   */
+
+  std::string input;
+  std::getline(std::cin, input);
+
+  ncrypt::Key key("key");
+
+  ncrypt::Encriptor encriptor(input, key);
+  std::cout << encriptor.to_s() << std::endl;
+
+  key.inspect();
+
+  ncrypt::Decriptor decriptor(encriptor.to_s(), key);
+  std::cout << decriptor.to_s() << std::endl;
 
   return 0;
 }
