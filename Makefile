@@ -1,7 +1,7 @@
 CC=c++
 CFLAGS=-std=c++11 -g
 
-PR=ncrypt_public
+PR=public_ncrypt
 
 all: clean compile run
 

@@ -163,38 +163,6 @@ namespace ncrypt
         return this->at(i);
   }
   // ----------------------------------
-  class PublicKey
-  {
-    private:
-      PublicKeyTable table;
-      void init_table();
-
-    public:
-      PublicKey();
-      void inspect();
-      PublicKeyTable get_table();
-  };
-
-  PublicKey::PublicKey()
-  {
-    this->init_table();
-  }
-
-  void PublicKey::init_table()
-  {
-    table = PublicKeyTable();
-  }
-
-  void PublicKey::inspect()
-  {
-    table.inspect();
-  }
-
-  PublicKeyTable PublicKey::get_table()
-  {
-    return this->table;
-  }
-  // ----------------------------------
   class Key
   {
     private:
@@ -598,38 +566,29 @@ namespace ncrypt
   }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-
-  //ncrypt::Encriptor encriptor("Lorem ipsum dolor sit amet, consectetur adipiscing elit.");
-
-  //std::cout << encriptor.to_s() << std::endl;
-  //std::cout << encriptor.get_key().serialize() << std::endl;
-
-  //ncrypt::Decriptor decriptor(encriptor.to_s(), encriptor.get_key());
-  //std::cout << decriptor.to_s() << std::endl;
-
-  /*ncrypt::PublicKeyTable tbl;
-  tbl.inspect();
-  std::ofstream out("my.key");
-  ncrypt::Key key;
-  out << key;
-
-  out.close();
-  */
-
+  std::string file_path = argv[2];
   std::string input;
-  std::getline(std::cin, input);
 
-  ncrypt::Key key("key");
+  ncrypt::Key key(file_path);
 
-  ncrypt::Encriptor encriptor(input, key);
-  std::cout << encriptor.to_s() << std::endl;
+  if(std::string(argv[1]) == "-enc")
+  {
+    std::cout << "Rapid scrie mesajul care trebuie criptat !! )" << std::endl;
+    std::getline(std::cin, input);
 
-  key.inspect();
+    ncrypt::Encriptor encriptor(input, key);
+    std::cout << encriptor.to_s() << std::endl;
+  }
+  else
+  {
+    std::cout << "Ce secret vreai sa iti decriptez ?" << std::endl;
+    std::getline(std::cin, input);
 
-  ncrypt::Decriptor decriptor(encriptor.to_s(), key);
-  std::cout << decriptor.to_s() << std::endl;
+    ncrypt::Decriptor decriptor(input, key);
+    std::cout << decriptor.to_s() << std::endl;
+  }
 
   return 0;
 }
