@@ -23,7 +23,7 @@
   (byte & 0x02 ? 1 : 0), \
   (byte & 0x01 ? 1 : 0)
 
-namespace ncrypt
+namespace public_ncrypt
 {
   bool file_is_empty(std::ifstream& pFile)
   {
@@ -338,7 +338,7 @@ namespace ncrypt
   {
     std::cout << "<[Key modulo: " << this->modulo << " inverse_modulo: " << this->inverse_modulo << std::endl;
       std::cout << "\t sed: ";
-      std::cout << ncrypt::inspect_sed_vector(this->sed) << std::endl;
+      std::cout << public_ncrypt::inspect_sed_vector(this->sed) << std::endl;
     std::cout << "]>" << std::endl;
   }
 
@@ -355,10 +355,10 @@ namespace ncrypt
     buff += SSTR(this->inverse_modulo);
     buff += '\n';
 
-    buff += ncrypt::inspect_sed_vector(this->sed);
+    buff += public_ncrypt::inspect_sed_vector(this->sed);
     buff += '\n';
 
-    buff += ncrypt::inspect_sed_vector(this->public_sed);
+    buff += public_ncrypt::inspect_sed_vector(this->public_sed);
     buff += '\n';
 
     return buff;
@@ -505,7 +505,7 @@ namespace ncrypt
   std::vector<unsigned long int> Decriptor::msg_to_vector(std::string msg)
   {
     std::vector<unsigned long int> fragments;
-    std::vector<std::string> fragments_str = ncrypt::split_string(msg, " ");
+    std::vector<std::string> fragments_str = public_ncrypt::split_string(msg, " ");
 
     for(int i = 0; i < fragments_str.size(); i++)
       fragments.push_back(std::atoi(fragments_str[i].c_str()));
@@ -571,14 +571,14 @@ int main(int argc, char* argv[])
   std::string file_path = argv[2];
   std::string input;
 
-  ncrypt::Key key(file_path);
+  public_ncrypt::Key key(file_path);
 
   if(std::string(argv[1]) == "-enc")
   {
     std::cout << "Rapid scrie mesajul care trebuie criptat !! )" << std::endl;
     std::getline(std::cin, input);
 
-    ncrypt::Encriptor encriptor(input, key);
+    public_ncrypt::Encriptor encriptor(input, key);
     std::cout << encriptor.to_s() << std::endl;
   }
   else
@@ -586,7 +586,7 @@ int main(int argc, char* argv[])
     std::cout << "Ce secret vreai sa iti decriptez ?" << std::endl;
     std::getline(std::cin, input);
 
-    ncrypt::Decriptor decriptor(input, key);
+    public_ncrypt::Decriptor decriptor(input, key);
     std::cout << decriptor.to_s() << std::endl;
   }
 

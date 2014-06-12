@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <math.h>
 
-namespace ncrypt
+namespace grid
 {
   // ---------------Helpers----------------------
 
@@ -59,7 +59,7 @@ namespace ncrypt
   Key::Key(int _n, int _c_key[][2], int _c_key_len)
   {
     this->init_key(_n);
-    std::vector<std::vector<int> > c_key = ncrypt::make_c_key(_c_key_len, _c_key);
+    std::vector<std::vector<int> > c_key = grid::make_c_key(_c_key_len, _c_key);
     this->set_c_key(c_key);
   }
 
@@ -69,21 +69,32 @@ namespace ncrypt
 
     std::srand((unsigned)time(0));
     Key tmp = *this;
-    for(int col = 0; col < _n; col++)
+    for(int grad = 0; grad <= _n / 2; grad++)
     {
-      int line = std::rand() % _n;
-      while(
-            (tmp.is_center(col, line) ||
-            (tmp[col][line] == -1)) &&
-            (tmp.col_solutions_nr(col) > 0)
-          )
+      int j = 0;
+      while(j < _n-grad-1)
       {
-        line = std::rand() % _n;
-      }
-      if(!tmp.is_center(col, line))
-      {
-        int pos[2] = { col, line };
-        tmp |= pos;
+        int line, col;
+        col = grad + std::rand() % (_n-grad);
+        line = std::rand() % 2;
+
+        line = line ? grad : _n-grad-1;
+
+        while(
+              (tmp.is_center(col, line) ||
+              (tmp[col][line] != 0))    &&
+              (tmp.col_solutions_nr(grad) > 0)
+            )
+        {
+          col = grad + std::rand() % (_n-grad);
+          line = line ? grad : _n-grad-1;
+        }
+        if(!tmp.is_center(col, line))
+        {
+          int pos[2] = { col, line };
+          tmp |= pos;
+          j++;
+        }
       }
     }
     *this = tmp.normalize();
@@ -107,13 +118,27 @@ namespace ncrypt
     }
   }
 
-  int Key::col_solutions_nr(int col)
+  int Key::col_solutions_nr(int frame_nr)
   {
     int nr = 0;
-    for(int i = 0; i < this->size(); i++)
+    int len = this->size()-1;
+    int range = len - frame_nr;
+
+    if(this->is_center(frame_nr, frame_nr))
+      return 0;
+
+    for(int i = frame_nr; i <= range; i++)
     {
-      if(this->at(col).at(i) != -1 && !this->is_center(col, i)) nr++;
+      nr += this->at(i).at(frame_nr) == 0 ? 1 : 0;
+      nr += this->at(i).at(len-frame_nr) == 0 ? 1 : 0;
     }
+
+    for(int i = frame_nr+1; i <= range-1; i++)
+    {
+      nr += this->at(frame_nr).at(i) == 0 ? 1 : 0;
+      nr += this->at(len-frame_nr).at(i) == 0 ? 1 : 0;
+    }
+
     return nr;
   }
 
@@ -205,6 +230,8 @@ namespace ncrypt
 
       int msg_key_size(std::string);
       std::string encrypt_frame(std::string, Key, std::string&, int&);
+      std::string encrypt_frame(int, std::string, Key, std::string&, int&);
+      std::string set_pos(int x, int y, std::string msg, Key key, std::string& buff, int& pos_ch);
       std::string encrypt();
 
     public:
@@ -239,17 +266,37 @@ namespace ncrypt
     return size;
   }
 
-  std::string Encoder::encrypt_frame(std::string msg, Key key, std::string& buff, int& pos_ch)
+  std::string Encoder::encrypt_frame(int frame_nr, std::string msg, Key key, std::string& buff, int& pos_ch)
+  {
+    int len = key.size()-1;
+
+    for(int i = frame_nr; i <= len - frame_nr; i++)
+      set_pos(i, frame_nr, msg, key, buff, pos_ch);
+
+    for(int i = frame_nr+1; i <= len - frame_nr-1; i++)
+      set_pos(frame_nr, i, msg, key, buff, pos_ch);
+
+    for(int i = frame_nr+1; i <= len - frame_nr-1; i++)
+      set_pos(len-frame_nr, i, msg, key, buff, pos_ch);
+
+    for(int i = frame_nr; i <= len - frame_nr; i++)
+      set_pos(i, len-frame_nr, msg, key, buff, pos_ch);
+
+    return buff;
+  }
+
+  std::string Encoder::set_pos(int x, int y, std::string msg, Key key, std::string& buff, int& pos_ch)
   {
     int len = key.size();
-    for(int i = 0; i < len; i++)
-      for(int j = 0; j < len; j++)
-        if(key[i][j])
-        {
-          int pos = i * len + j;
-          buff[pos] = msg[pos_ch];
-          pos_ch++;
-        }
+    if(key[x][y])
+    {
+      int pos = x * len + y;
+      if(pos_ch < msg.size())
+      {
+        buff[pos] = msg[pos_ch];
+        pos_ch++;
+      }
+    }
     return buff;
   }
 
@@ -258,21 +305,19 @@ namespace ncrypt
     std::string buff(pow(this->key.size(), 2), '~');
     Key tmp_key = this->key;
     int pos_ch = 0;
-    for(int i = 0; i < 4; i++)
+    for(int i = 0; i < tmp_key.size() / 2; i++)
     {
-      this->encrypt_frame(msg, tmp_key, buff, pos_ch);
-      tmp_key++;
+      for(int j = 0; j < 4; j++)
+      {
+        this->encrypt_frame(i, msg, tmp_key, buff, pos_ch);
+        tmp_key++;
+      }
     }
 
-    /*
-    // TODO: De vazut de ce lucreaza fara portiunea respectiva
+    // In cazul in care cheia are dimensiunea impara, plasez caracterul din centru
     if(key.size() % 2)
-    {
-      int pos = ((key.size() + 1) / 2) - 1;
-      int chr_pos = pos * (key.size()-1) + (key.size()-1);
-      buff += msg[chr_pos];
-    }
-    */
+      buff += msg.at(msg.length()-1);
+
     return buff;
   }
 
@@ -299,7 +344,8 @@ namespace ncrypt
       Key key;
       std::string msg;
       std::string decode();
-      std::string decode_frame(std::string, Key);
+      std::string decode_frame(int, std::string, Key);
+      std::string get_pos(int x, int y, std::string msg, Key key, std::string& buff);
     public:
       Decoder(std::string, Key);
       std::string to_s();
@@ -311,17 +357,34 @@ namespace ncrypt
     this->msg = msg;
   }
 
-  std::string Decoder::decode_frame(std::string msg, Key key)
+  std::string Decoder::decode_frame(int frame_nr, std::string msg, Key key)
   {
     std::string buff = "";
+
+    int len = key.size()-1;
+    for(int i = frame_nr; i <= len - frame_nr; i++)
+      get_pos(i, frame_nr, msg, key, buff);
+
+    for(int i = frame_nr+1; i <= len - frame_nr-1; i++)
+      get_pos(frame_nr, i, msg, key, buff);
+
+    for(int i = frame_nr+1; i <= len - frame_nr-1; i++)
+      get_pos(len-frame_nr, i, msg, key, buff);
+
+    for(int i = frame_nr; i <= len - frame_nr; i++)
+      get_pos(i, len-frame_nr, msg, key, buff);
+
+    return buff;
+  }
+
+  std::string Decoder::get_pos(int x, int y, std::string msg, Key key, std::string& buff)
+  {
     int len = key.size();
-    for(int i = 0; i < len; i++)
-      for(int j = 0; j < len; j++)
-        if(key[i][j])
-        {
-          int pos = i * len + j;
-          buff += msg[pos];
-        }
+    if(key[x][y])
+    {
+      int pos = x * len + y;
+      buff += msg[pos];
+    }
     return buff;
   }
 
@@ -329,11 +392,16 @@ namespace ncrypt
   {
     std::string buff = "";
     Key tmp_key = this->key;
+    for(int i = 0; i < tmp_key.size() / 2; i++)
+      for(int j = 0; j < 4; j++)
+      {
+        buff += this->decode_frame(i, this->msg, tmp_key);
+        tmp_key++;
+      }
 
-    for(int i = 0; i < 4; i++)
+    if(key.size() % 2)
     {
-      buff += this->decode_frame(this->msg, tmp_key);
-      tmp_key++;
+      buff += msg.at(msg.length()-1);
     }
     return buff;
   }
@@ -346,115 +414,21 @@ namespace ncrypt
 }
 int main()
 {
-  /*
-  std::vector<std::vector<int> > c_key;
-  int _n = 7;
-  int _c_key[][2] =  {
-    {1, 7}, {7, 6},
-    {1, 3}, {1, 4},
-    {3, 1}, {2, 1},
-    {6, 6}, {2, 3},
-    {4, 6}, {5, 6},
-    {3, 5}, {4, 3}
-  };
+  std::cout << "Introduceti textul pentru criptare" << std::endl;
+  std::cout << "___________________________________________________" << std::endl;
 
-  for(int i = 0; i < 7; i++)
-  {
-    std::vector<int> tmp;
-    tmp.push_back(_c_key[i][0]);
-    tmp.push_back(_c_key[i][1]);
+  std::string txt;
+  std::getline(std::cin, txt);
 
-    c_key.push_back(tmp);
-  }
-  ncrypt::Key key(_n, c_key);
-  */
-  /*
-  ncrypt::Key key(_n, c_key);
-  key++;
-  key.inspect();
-  */
-
-  /*
-  ncrypt::Key key(3);
-  key.inspect();
-  */
-
-  /*
-  ncrypt::Key key(_n, c_key);
-  ncrypt::Encoder encoder("ABCDEFGHIJKLMNOP", key);
-  std::cout << encoder.to_s() << std::endl;
-  */
-
-  /*
-  ncrypt::Encoder encoder("ABCDEFGHIJKLMNOP");
-  */
-
-
-  /*
-  ncrypt::Encoder encoder("ABCDE");
-  ncrypt::Key key = encoder.get_key();
-  std::cout << encoder.to_s() << std::endl;
-
-  ncrypt::Decoder decoder(encoder.to_s(), key);
-  std::cout << decoder.to_s() << std::endl;
-  */
-
-  /*
-  ncrypt::Key key(_n, c_key);
-  ncrypt::Encoder encoder("AGILBDKNEHJPCFMO", key);
-  std::cout << encoder.to_s() << std::endl;
-  */
-  /*
-  ncrypt::Key key(_n, c_key);
-  ncrypt::Encoder encoder("ABCDEFGHIJKLMNOP", key);
-  std::cout << encoder.to_s() << std::endl;
-
-  ncrypt::Decoder decoder("omw.mnwohtisdggm~~b.de.c~~aolr~~~.oadfciinoc.i/w.", key);
-  std::cout << decoder.to_s() << std::endl;
-  */
-  /*
-  std::ifstream in("./ncrypt.in");
-  std::string buff;
-  std::getline(in, buff);
-
-  std::cout << "==================Textul initial===============" << std::endl;
-  std::cout << buff.size() << std::endl;
-
-  ncrypt::Encoder encoder(buff);
-  std::cout << "==================Textul criptat===============" << std::endl;
-  std::cout << encoder.to_s() << std::endl;
-
-  ncrypt::Decoder decoder(encoder.to_s(), encoder.get_key());
-  std::cout << "==================Textul decriptat=============" << std::endl;
-  std::cout << decoder.to_s().size() << std::endl;
-
-  std::cout << "==================Cheia========================" << std::endl;
+  grid::Encoder encoder(txt);
+  grid::Decoder decoder(encoder.to_s(), encoder.get_key());
+  std::cout << "=================Cheia de criptare=================" << std::endl;
   encoder.get_key().inspect();
-  */
-  /*
-  int _n = 6;
-  int _c_key[][2] =  {
-    {1,2}, {1,4}, {1,6},
-    {2,5},
-    {3,3},
-    {4,2}, {4,5},
-    {5,6},
-    {6,4}
-  };
-  ncrypt::Key key(_n, _c_key, 9);
-  */
-
-  int _n = 3;
-  int _c_key[][2] = {
-    {1,1}, {2,3}
-  };
-  ncrypt::Key key(_n, _c_key, 2);
-  ncrypt::Encoder encoder("criptare");
-  ncrypt::Decoder decoder(encoder.to_s(), encoder.get_key());
-
+  std::cout << "=================Mesajul criptat===================" << std::endl;
   std::cout << encoder.to_s() << std::endl;
+
+  std::cout << "=================Mesajul decriptat=================" << std::endl;
   std::cout << decoder.to_s() << std::endl;
-  encoder.get_key().inspect();
 
   return 0;
 }
