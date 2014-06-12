@@ -1,12 +1,6 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <ctime>
-#include <cstdlib>
-#include <math.h>
+#include "grid_ncrypt.hpp"
 
-namespace grid
+namespace grid_ncrypt
 {
   // ---------------Helpers----------------------
 
@@ -26,30 +20,6 @@ namespace grid
 
   // ---------------Key class--------------------
 
-  class Key : public std::vector<std::vector<int> >
-  {
-    private:
-      void init_key(int size);
-      int col_solutions_nr(int);
-      bool is_center(int x, int y);
-      void set_c_key(std::vector<std::vector<int> >);
-      std::vector<std::vector<int> > make_c_key(int[][2]);
-
-      Key normalize();
-      Key operator |= (int[2]); // exclud colurile
-
-    public:
-      Key() {};
-      Key(int, std::vector<std::vector<int> >);
-      Key(int);             // se genereaza automat
-      Key(int, int[][2], int);
-
-      void inspect();
-
-      Key operator ++(int); // rotarea cheii la 90 grade
-      Key operator --(int); // rotarea cheii la -90 grade
-  };
-
   Key::Key(int _n, std::vector<std::vector<int> > c_key)
   {
     this->init_key(_n);
@@ -59,7 +29,7 @@ namespace grid
   Key::Key(int _n, int _c_key[][2], int _c_key_len)
   {
     this->init_key(_n);
-    std::vector<std::vector<int> > c_key = grid::make_c_key(_c_key_len, _c_key);
+    std::vector<std::vector<int> > c_key = grid_ncrypt::make_c_key(_c_key_len, _c_key);
     this->set_c_key(c_key);
   }
 
@@ -221,29 +191,6 @@ namespace grid
   }
 
   // --------------Encoder class-----------------
-
-  class Encoder
-  {
-    private:
-      std::string msg;
-      Key key;
-
-      int msg_key_size(std::string);
-      std::string encrypt_frame(std::string, Key, std::string&, int&);
-      std::string encrypt_frame(int, std::string, Key, std::string&, int&);
-      std::string set_pos(int x, int y, std::string msg, Key key, std::string& buff, int& pos_ch);
-      std::string encrypt();
-
-    public:
-      Encoder(std::string); // automat genereaza cheia
-      Encoder(std::string, Key);
-
-      Key get_key();
-      std::string get_msg();
-
-      std::string to_s();
-  };
-
   Encoder::Encoder(std::string msg)
   {
     this->msg = msg;
@@ -337,20 +284,6 @@ namespace grid
   }
 
   // -------------------Decoder class------------
-
-  class Decoder
-  {
-    private:
-      Key key;
-      std::string msg;
-      std::string decode();
-      std::string decode_frame(int, std::string, Key);
-      std::string get_pos(int x, int y, std::string msg, Key key, std::string& buff);
-    public:
-      Decoder(std::string, Key);
-      std::string to_s();
-  };
-
   Decoder::Decoder(std::string msg, Key key)
   {
     this->key = key;
@@ -411,24 +344,4 @@ namespace grid
     return this->decode();
   }
 
-}
-int main()
-{
-  std::cout << "Introduceti textul pentru criptare" << std::endl;
-  std::cout << "___________________________________________________" << std::endl;
-
-  std::string txt;
-  std::getline(std::cin, txt);
-
-  grid::Encoder encoder(txt);
-  grid::Decoder decoder(encoder.to_s(), encoder.get_key());
-  std::cout << "=================Cheia de criptare=================" << std::endl;
-  encoder.get_key().inspect();
-  std::cout << "=================Mesajul criptat===================" << std::endl;
-  std::cout << encoder.to_s() << std::endl;
-
-  std::cout << "=================Mesajul decriptat=================" << std::endl;
-  std::cout << decoder.to_s() << std::endl;
-
-  return 0;
 }

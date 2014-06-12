@@ -1,33 +1,10 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <cstdlib>
-#include <ctime>
-#include <math.h>
-#include <sstream>
-#include <algorithm>
+#include "fragment_ncrypt.hpp"
 
-#define SSTR( x ) dynamic_cast< std::ostringstream & >( \
-            ( std::ostringstream() << std::dec << x ) ).str()
-
-namespace fragment
+namespace fragment_ncrypt
 {
-  class Encoder
-  {
-    unsigned long long int msg;
-
-    public:
-      Encoder(unsigned long long int);
-
-      std::string to_s();
-      std::vector<std::vector<unsigned long long int> > to_a();
-      std::vector<std::vector<unsigned long long int> > encode();
-  };
-
+  // ----------------------------------------
   Encoder::Encoder(unsigned long long int msg)
   {
-    //std::srand(std::time(0));
     this->msg = msg;
   }
 
@@ -103,17 +80,6 @@ namespace fragment
     return this->encode();
   }
   // ----------------------------------------
-  class Decoder
-  {
-    private:
-      std::vector<std::vector<unsigned long long int> > msg;
-
-    public:
-      Decoder(std::vector<std::vector<unsigned long long int> >);
-      std::string to_s();
-      unsigned long long int decode();
-  };
-
   Decoder::Decoder(std::vector<std::vector<unsigned long long int> > msg)
   {
     this->msg = msg;
@@ -151,19 +117,4 @@ namespace fragment
     return SSTR(this->decode());
   }
 
-}
-
-int main(int argc, char* argv[])
-{
-  unsigned long long int num;
-  std::cout << "Numarul lui Ion este:" << std::endl;
-  std::cin >> num;
-
-  fragment::Encoder enc(num);
-  std::cout << enc.to_s() << std::endl;
-
-  fragment::Decoder dec(enc.to_a());
-  std::cout << dec.to_s() << std::endl;
-
-  return 0;
 }

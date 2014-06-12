@@ -1,0 +1,3 @@
+/media/hdd/pr/c++/crypt/CMakeFiles/fragment_ncrypt.dir
+/media/hdd/pr/c++/crypt/CMakeFiles/grid_ncrypt.dir
+/media/hdd/pr/c++/crypt/CMakeFiles/public_ncrypt.dir

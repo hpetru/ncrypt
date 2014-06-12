@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/media/hdd/pr/c++/crypt/lib/src/fragment_ncrypt.cc
+fragment_ncrypt.hpp
+/media/hdd/pr/c++/crypt/lib/src/fragment_ncrypt.hpp
+
+/media/hdd/pr/c++/crypt/src/fragment_ncrypt.cxx
+iostream
+-
+fragment_ncrypt.hpp
+/media/hdd/pr/c++/crypt/src/fragment_ncrypt.hpp
+
+lib/include/fragment_ncrypt.hpp
+iostream
+-
+fstream
+-
+string
+-
+vector
+-
+cstdlib
+-
+ctime
+-
+math.h
+-
+sstream
+-
+algorithm
+-
+
