@@ -56,13 +56,48 @@ CMAKE_SOURCE_DIR = /media/hdd/pr/c++/crypt
 CMAKE_BINARY_DIR = /media/hdd/pr/c++/crypt
 
 #=============================================================================
+# Target rules for target CMakeFiles/client.dir
+
+# All Build rule for target.
+CMakeFiles/client.dir/all:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/depend
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /media/hdd/pr/c++/crypt/CMakeFiles  1 2 3
+	@echo "Built target client"
+.PHONY : CMakeFiles/client.dir/all
+
+# Include target in all.
+all: CMakeFiles/client.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/client.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/hdd/pr/c++/crypt/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/client.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/hdd/pr/c++/crypt/CMakeFiles 0
+.PHONY : CMakeFiles/client.dir/rule
+
+# Convenience name for target.
+client: CMakeFiles/client.dir/rule
+.PHONY : client
+
+# clean rule for target.
+CMakeFiles/client.dir/clean:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/clean
+.PHONY : CMakeFiles/client.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/client.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/fragment_ncrypt.dir
 
 # All Build rule for target.
 CMakeFiles/fragment_ncrypt.dir/all:
 	$(MAKE) -f CMakeFiles/fragment_ncrypt.dir/build.make CMakeFiles/fragment_ncrypt.dir/depend
 	$(MAKE) -f CMakeFiles/fragment_ncrypt.dir/build.make CMakeFiles/fragment_ncrypt.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /media/hdd/pr/c++/crypt/CMakeFiles  1 2
+	$(CMAKE_COMMAND) -E cmake_progress_report /media/hdd/pr/c++/crypt/CMakeFiles  4 5
 	@echo "Built target fragment_ncrypt"
 .PHONY : CMakeFiles/fragment_ncrypt.dir/all
 
@@ -97,7 +132,7 @@ clean: CMakeFiles/fragment_ncrypt.dir/clean
 CMakeFiles/grid_ncrypt.dir/all:
 	$(MAKE) -f CMakeFiles/grid_ncrypt.dir/build.make CMakeFiles/grid_ncrypt.dir/depend
 	$(MAKE) -f CMakeFiles/grid_ncrypt.dir/build.make CMakeFiles/grid_ncrypt.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /media/hdd/pr/c++/crypt/CMakeFiles  3 4
+	$(CMAKE_COMMAND) -E cmake_progress_report /media/hdd/pr/c++/crypt/CMakeFiles  6 7
 	@echo "Built target grid_ncrypt"
 .PHONY : CMakeFiles/grid_ncrypt.dir/all
 
@@ -132,7 +167,7 @@ clean: CMakeFiles/grid_ncrypt.dir/clean
 CMakeFiles/public_ncrypt.dir/all:
 	$(MAKE) -f CMakeFiles/public_ncrypt.dir/build.make CMakeFiles/public_ncrypt.dir/depend
 	$(MAKE) -f CMakeFiles/public_ncrypt.dir/build.make CMakeFiles/public_ncrypt.dir/build
-	$(CMAKE_COMMAND) -E cmake_progress_report /media/hdd/pr/c++/crypt/CMakeFiles  5 6
+	$(CMAKE_COMMAND) -E cmake_progress_report /media/hdd/pr/c++/crypt/CMakeFiles  8 9
 	@echo "Built target public_ncrypt"
 .PHONY : CMakeFiles/public_ncrypt.dir/all
 
@@ -158,6 +193,41 @@ CMakeFiles/public_ncrypt.dir/clean:
 
 # clean rule for target.
 clean: CMakeFiles/public_ncrypt.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/server.dir
+
+# All Build rule for target.
+CMakeFiles/server.dir/all:
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/depend
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /media/hdd/pr/c++/crypt/CMakeFiles  10 11 12
+	@echo "Built target server"
+.PHONY : CMakeFiles/server.dir/all
+
+# Include target in all.
+all: CMakeFiles/server.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/server.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/hdd/pr/c++/crypt/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/server.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /media/hdd/pr/c++/crypt/CMakeFiles 0
+.PHONY : CMakeFiles/server.dir/rule
+
+# Convenience name for target.
+server: CMakeFiles/server.dir/rule
+.PHONY : server
+
+# clean rule for target.
+CMakeFiles/server.dir/clean:
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/clean
+.PHONY : CMakeFiles/server.dir/clean
+
+# clean rule for target.
+clean: CMakeFiles/server.dir/clean
 .PHONY : clean
 
 #=============================================================================

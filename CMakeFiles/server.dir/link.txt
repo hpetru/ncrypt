@@ -1,0 +1,1 @@
+/usr/bin/c++       CMakeFiles/server.dir/src/server.cxx.o CMakeFiles/server.dir/lib/src/chat_message.cc.o CMakeFiles/server.dir/lib/src/public_ncrypt.cc.o  -o bin/server -rdynamic -lpthread -lboost_system -lboost_thread -lboost_program_options 

@@ -19,6 +19,7 @@ SET(CMAKE_MAKEFILE_DEPENDS
   "/usr/share/cmake-2.8/Modules/Compiler/GNU-C.cmake"
   "/usr/share/cmake-2.8/Modules/Compiler/GNU-CXX.cmake"
   "/usr/share/cmake-2.8/Modules/Compiler/GNU.cmake"
+  "/usr/share/cmake-2.8/Modules/FindBoost.cmake"
   "/usr/share/cmake-2.8/Modules/Platform/Linux-GNU-C.cmake"
   "/usr/share/cmake-2.8/Modules/Platform/Linux-GNU-CXX.cmake"
   "/usr/share/cmake-2.8/Modules/Platform/Linux-GNU.cmake"
@@ -39,7 +40,9 @@ SET(CMAKE_MAKEFILE_PRODUCTS
 
 # Dependency information for all targets:
 SET(CMAKE_DEPEND_INFO_FILES
+  "CMakeFiles/client.dir/DependInfo.cmake"
   "CMakeFiles/fragment_ncrypt.dir/DependInfo.cmake"
   "CMakeFiles/grid_ncrypt.dir/DependInfo.cmake"
   "CMakeFiles/public_ncrypt.dir/DependInfo.cmake"
+  "CMakeFiles/server.dir/DependInfo.cmake"
   )

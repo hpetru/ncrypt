@@ -63,7 +63,7 @@ namespace public_ncrypt
 
       std::vector<unsigned long int> _get_sed();
       std::vector<unsigned long int> _get_public_sed(
-          std::vector<unsigned long int>, 
+          std::vector<unsigned long int>,
           unsigned long int,
           unsigned long int);
       unsigned long int _get_modulo(std::vector<unsigned long int>);

@@ -102,6 +102,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named client
+
+# Build rule for target.
+client: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 client
+.PHONY : client
+
+# fast build rule for target.
+client/fast:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/build
+.PHONY : client/fast
+
+#=============================================================================
 # Target rules for targets named fragment_ncrypt
 
 # Build rule for target.
@@ -139,6 +152,46 @@ public_ncrypt: cmake_check_build_system
 public_ncrypt/fast:
 	$(MAKE) -f CMakeFiles/public_ncrypt.dir/build.make CMakeFiles/public_ncrypt.dir/build
 .PHONY : public_ncrypt/fast
+
+#=============================================================================
+# Target rules for targets named server
+
+# Build rule for target.
+server: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 server
+.PHONY : server
+
+# fast build rule for target.
+server/fast:
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/build
+.PHONY : server/fast
+
+lib/src/chat_message.o: lib/src/chat_message.cc.o
+.PHONY : lib/src/chat_message.o
+
+# target to build an object file
+lib/src/chat_message.cc.o:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/lib/src/chat_message.cc.o
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/lib/src/chat_message.cc.o
+.PHONY : lib/src/chat_message.cc.o
+
+lib/src/chat_message.i: lib/src/chat_message.cc.i
+.PHONY : lib/src/chat_message.i
+
+# target to preprocess a source file
+lib/src/chat_message.cc.i:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/lib/src/chat_message.cc.i
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/lib/src/chat_message.cc.i
+.PHONY : lib/src/chat_message.cc.i
+
+lib/src/chat_message.s: lib/src/chat_message.cc.s
+.PHONY : lib/src/chat_message.s
+
+# target to generate assembly for a file
+lib/src/chat_message.cc.s:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/lib/src/chat_message.cc.s
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/lib/src/chat_message.cc.s
+.PHONY : lib/src/chat_message.cc.s
 
 lib/src/fragment_ncrypt.o: lib/src/fragment_ncrypt.cc.o
 .PHONY : lib/src/fragment_ncrypt.o
@@ -193,7 +246,9 @@ lib/src/public_ncrypt.o: lib/src/public_ncrypt.cc.o
 
 # target to build an object file
 lib/src/public_ncrypt.cc.o:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/lib/src/public_ncrypt.cc.o
 	$(MAKE) -f CMakeFiles/public_ncrypt.dir/build.make CMakeFiles/public_ncrypt.dir/lib/src/public_ncrypt.cc.o
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/lib/src/public_ncrypt.cc.o
 .PHONY : lib/src/public_ncrypt.cc.o
 
 lib/src/public_ncrypt.i: lib/src/public_ncrypt.cc.i
@@ -201,7 +256,9 @@ lib/src/public_ncrypt.i: lib/src/public_ncrypt.cc.i
 
 # target to preprocess a source file
 lib/src/public_ncrypt.cc.i:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/lib/src/public_ncrypt.cc.i
 	$(MAKE) -f CMakeFiles/public_ncrypt.dir/build.make CMakeFiles/public_ncrypt.dir/lib/src/public_ncrypt.cc.i
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/lib/src/public_ncrypt.cc.i
 .PHONY : lib/src/public_ncrypt.cc.i
 
 lib/src/public_ncrypt.s: lib/src/public_ncrypt.cc.s
@@ -209,8 +266,34 @@ lib/src/public_ncrypt.s: lib/src/public_ncrypt.cc.s
 
 # target to generate assembly for a file
 lib/src/public_ncrypt.cc.s:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/lib/src/public_ncrypt.cc.s
 	$(MAKE) -f CMakeFiles/public_ncrypt.dir/build.make CMakeFiles/public_ncrypt.dir/lib/src/public_ncrypt.cc.s
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/lib/src/public_ncrypt.cc.s
 .PHONY : lib/src/public_ncrypt.cc.s
+
+src/client.o: src/client.cxx.o
+.PHONY : src/client.o
+
+# target to build an object file
+src/client.cxx.o:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/src/client.cxx.o
+.PHONY : src/client.cxx.o
+
+src/client.i: src/client.cxx.i
+.PHONY : src/client.i
+
+# target to preprocess a source file
+src/client.cxx.i:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/src/client.cxx.i
+.PHONY : src/client.cxx.i
+
+src/client.s: src/client.cxx.s
+.PHONY : src/client.s
+
+# target to generate assembly for a file
+src/client.cxx.s:
+	$(MAKE) -f CMakeFiles/client.dir/build.make CMakeFiles/client.dir/src/client.cxx.s
+.PHONY : src/client.cxx.s
 
 src/fragment_ncrypt.o: src/fragment_ncrypt.cxx.o
 .PHONY : src/fragment_ncrypt.o
@@ -284,17 +367,46 @@ src/public_ncrypt.cxx.s:
 	$(MAKE) -f CMakeFiles/public_ncrypt.dir/build.make CMakeFiles/public_ncrypt.dir/src/public_ncrypt.cxx.s
 .PHONY : src/public_ncrypt.cxx.s
 
+src/server.o: src/server.cxx.o
+.PHONY : src/server.o
+
+# target to build an object file
+src/server.cxx.o:
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/server.cxx.o
+.PHONY : src/server.cxx.o
+
+src/server.i: src/server.cxx.i
+.PHONY : src/server.i
+
+# target to preprocess a source file
+src/server.cxx.i:
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/server.cxx.i
+.PHONY : src/server.cxx.i
+
+src/server.s: src/server.cxx.s
+.PHONY : src/server.s
+
+# target to generate assembly for a file
+src/server.cxx.s:
+	$(MAKE) -f CMakeFiles/server.dir/build.make CMakeFiles/server.dir/src/server.cxx.s
+.PHONY : src/server.cxx.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
 	@echo "... all (the default if no target is provided)"
 	@echo "... clean"
 	@echo "... depend"
+	@echo "... client"
 	@echo "... edit_cache"
 	@echo "... fragment_ncrypt"
 	@echo "... grid_ncrypt"
 	@echo "... public_ncrypt"
 	@echo "... rebuild_cache"
+	@echo "... server"
+	@echo "... lib/src/chat_message.o"
+	@echo "... lib/src/chat_message.i"
+	@echo "... lib/src/chat_message.s"
 	@echo "... lib/src/fragment_ncrypt.o"
 	@echo "... lib/src/fragment_ncrypt.i"
 	@echo "... lib/src/fragment_ncrypt.s"
@@ -304,6 +416,9 @@ help:
 	@echo "... lib/src/public_ncrypt.o"
 	@echo "... lib/src/public_ncrypt.i"
 	@echo "... lib/src/public_ncrypt.s"
+	@echo "... src/client.o"
+	@echo "... src/client.i"
+	@echo "... src/client.s"
 	@echo "... src/fragment_ncrypt.o"
 	@echo "... src/fragment_ncrypt.i"
 	@echo "... src/fragment_ncrypt.s"
@@ -313,6 +428,9 @@ help:
 	@echo "... src/public_ncrypt.o"
 	@echo "... src/public_ncrypt.i"
 	@echo "... src/public_ncrypt.s"
+	@echo "... src/server.o"
+	@echo "... src/server.i"
+	@echo "... src/server.s"
 .PHONY : help
 
 
